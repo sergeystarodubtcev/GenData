@@ -29,7 +29,7 @@ def create_user(db: Session, user: UserCreate) -> User:
         full_name=user.full_name,
         company_name=user.company_name,
         role=user.role,
-        metadata=user.metadata or {}
+        user_metadata=user.metadata or {}
     )
     db.add(db_user)
     db.commit()
@@ -44,6 +44,9 @@ def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[
         return None
     
     update_data = user_update.dict(exclude_unset=True)
+    # Маппинг metadata -> user_metadata
+    if 'metadata' in update_data:
+        update_data['user_metadata'] = update_data.pop('metadata')
     for field, value in update_data.items():
         setattr(db_user, field, value)
     
@@ -67,9 +70,9 @@ def create_or_update_user_from_import(
     login: str,
     full_name: Optional[str] = None,
     company_name: Optional[str] = None,
-    role: str = "client",
-    metadata: Optional[dict] = None,
-    password: Optional[str] = None
+        role: str = "client",
+        user_metadata: Optional[dict] = None,
+        password: Optional[str] = None
 ) -> User:
     """Создать или обновить пользователя при импорте"""
     db_user = get_user_by_login(db, login)
@@ -82,8 +85,8 @@ def create_or_update_user_from_import(
             db_user.company_name = company_name
         if role:
             db_user.role = role
-        if metadata:
-            db_user.metadata = {**(db_user.metadata or {}), **metadata}
+        if user_metadata:
+            db_user.user_metadata = {**(db_user.user_metadata or {}), **user_metadata}
         db.commit()
         db.refresh(db_user)
         return db_user
@@ -101,7 +104,7 @@ def create_or_update_user_from_import(
             full_name=full_name,
             company_name=company_name,
             role=role,
-            metadata=metadata or {}
+            user_metadata=user_metadata or {}
         )
         db.add(db_user)
         db.commit()

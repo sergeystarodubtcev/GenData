@@ -20,8 +20,13 @@ class User(Base):
     full_name = Column(String(255), nullable=True)
     company_name = Column(String(255), nullable=True)
     role = Column(String(50), nullable=False, default=UserRole.CLIENT.value)
-    metadata = Column(JSON, nullable=True, default={})
+    user_metadata = Column("metadata", JSON, nullable=True, default={})
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
     is_active = Column(Boolean, default=True)
+    
+    @property
+    def metadata(self):
+        """Property для совместимости с API (маппинг user_metadata -> metadata)"""
+        return self.user_metadata
 

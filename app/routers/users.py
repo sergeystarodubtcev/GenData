@@ -159,7 +159,7 @@ def import_users(
                         full_name=full_name,
                         company_name=company_name,
                         role=role,
-                        metadata=metadata if metadata else None
+                        user_metadata=metadata if metadata else None
                     )
                     updated_count += 1
                 else:
@@ -169,7 +169,7 @@ def import_users(
                         full_name=full_name,
                         company_name=company_name,
                         role=role,
-                        metadata=metadata if metadata else None
+                        user_metadata=metadata if metadata else None
                     )
                     imported_count += 1
                     
