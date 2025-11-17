@@ -9,6 +9,21 @@ from app.models import User
 from app.schemas import UserCreate, UserResponse, UserUpdate
 from app import crud
 
+
+def convert_user_to_response(user: User) -> UserResponse:
+    """Конвертация User модели в UserResponse с маппингом user_metadata -> metadata"""
+    return UserResponse(
+        id=user.id,
+        login=user.login,
+        full_name=user.full_name,
+        company_name=user.company_name,
+        role=user.role,
+        metadata=user.user_metadata,
+        created_at=user.created_at,
+        updated_at=user.updated_at,
+        is_active=user.is_active
+    )
+
 router = APIRouter(prefix="/admin/users", tags=["users"])
 
 
@@ -26,7 +41,8 @@ def create_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Пользователь с таким логином уже существует"
         )
-    return crud.create_user(db=db, user=user)
+    created_user = crud.create_user(db=db, user=user)
+    return convert_user_to_response(created_user)
 
 
 @router.get("/", response_model=List[UserResponse])
@@ -38,7 +54,7 @@ def read_users(
 ):
     """Получить список пользователей"""
     users = crud.get_users(db, skip=skip, limit=limit)
-    return users
+    return [convert_user_to_response(user) for user in users]
 
 
 @router.get("/{user_id}", response_model=UserResponse)
@@ -54,7 +70,7 @@ def read_user(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Пользователь не найден"
         )
-    return db_user
+    return convert_user_to_response(db_user)
 
 
 @router.put("/{user_id}", response_model=UserResponse)
@@ -71,7 +87,7 @@ def update_user(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Пользователь не найден"
         )
-    return db_user
+    return convert_user_to_response(db_user)
 
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)

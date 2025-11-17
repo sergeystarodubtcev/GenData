@@ -24,9 +24,4 @@ class User(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, onupdate=func.now())
     is_active = Column(Boolean, default=True)
-    
-    @property
-    def metadata(self):
-        """Property для совместимости с API (маппинг user_metadata -> metadata)"""
-        return self.user_metadata
 
