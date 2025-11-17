@@ -1,0 +1,6 @@
+login,full_name,company_name,role
+user1,Иван Иванов,ООО "Ромашка",client
+user2,Петр Петров,ИП "Василек",employee
+user3,Мария Сидорова,ТОО "Тюльпан",investor
+admin2,Второй Администратор,ООО "Arenadata",admin
+
